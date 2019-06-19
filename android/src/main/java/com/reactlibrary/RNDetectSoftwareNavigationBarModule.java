@@ -11,13 +11,12 @@ import android.view.WindowManager;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Callback;
-
-import static android.content.Context.WINDOW_SERVICE;
 
 public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaModule {
 
   private final ReactApplicationContext reactContext;
+  private static boolean hasImmersive;
+  private static boolean cached = false;
 
   public RNDetectSoftwareNavigationBarModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -32,21 +31,30 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   @ReactMethod
   public boolean getIsSoftwareMode() {
-    WindowManager windowManager = (WindowManager)reactContext.getSystemService(Context.WINDOW_SERVICE);
-    Display d = windowManager.getDefaultDisplay();
+    if (!cached) {
+      if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+        hasImmersive = false;
+        cached = true;
+        return false;
+      }
+      Display d = ((WindowManager) reactContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 
-    DisplayMetrics realDisplayMetrics = new DisplayMetrics();
-    d.getRealMetrics(realDisplayMetrics);
+      DisplayMetrics realDisplayMetrics = new DisplayMetrics();
+      d.getRealMetrics(realDisplayMetrics);
 
-    int realHeight = realDisplayMetrics.heightPixels;
-    int realWidth = realDisplayMetrics.widthPixels;
+      int realHeight = realDisplayMetrics.heightPixels;
+      int realWidth = realDisplayMetrics.widthPixels;
 
-    DisplayMetrics displayMetrics = new DisplayMetrics();
-    d.getMetrics(displayMetrics);
+      DisplayMetrics displayMetrics = new DisplayMetrics();
+      d.getMetrics(displayMetrics);
 
-    int displayHeight = displayMetrics.heightPixels;
-    int displayWidth = displayMetrics.widthPixels;
+      int displayHeight = displayMetrics.heightPixels;
+      int displayWidth = displayMetrics.widthPixels;
 
-    return (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0;
+      hasImmersive = (realWidth > displayWidth) || (realHeight > displayHeight);
+      cached = true;
+    }
+
+    return hasImmersive;
   }
 }

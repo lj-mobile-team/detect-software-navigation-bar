@@ -4,4 +4,4 @@ const { RNDetectSoftwareNavigationBar } = NativeModules;
 
 const isSoftware = RNDetectSoftwareNavigationBar.isSoftware();
 
-export default isSoftware();
+export default isSoftware;

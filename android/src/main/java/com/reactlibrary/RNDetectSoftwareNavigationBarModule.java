@@ -6,15 +6,15 @@ import android.content.Context;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
+import android.view.ViewConfiguration;
 import android.view.WindowManager;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Callback;
-
-import static android.content.Context.WINDOW_SERVICE;
 
 public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaModule {
 
@@ -38,21 +38,31 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   public boolean getIsSoftwareMode() {
     WindowManager windowManager = (WindowManager)reactContext.getSystemService(Context.WINDOW_SERVICE);
-    Display d = windowManager.getDefaultDisplay();
 
-    DisplayMetrics realDisplayMetrics = new DisplayMetrics();
-    d.getRealMetrics(realDisplayMetrics);
+    boolean hasSoftwareKeys = true;
 
-    int realHeight = realDisplayMetrics.heightPixels;
-    int realWidth = realDisplayMetrics.widthPixels;
+    if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN_MR1){
+      Display d = windowManager.getDefaultDisplay();
 
-    DisplayMetrics displayMetrics = new DisplayMetrics();
-    d.getMetrics(displayMetrics);
+      DisplayMetrics realDisplayMetrics = new DisplayMetrics();
+      d.getRealMetrics(realDisplayMetrics);
 
-    int displayHeight = displayMetrics.heightPixels;
-    int displayWidth = displayMetrics.widthPixels;
+      int realHeight = realDisplayMetrics.heightPixels;
+      int realWidth = realDisplayMetrics.widthPixels;
 
-    return (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0;
-//    return true;
+      DisplayMetrics displayMetrics = new DisplayMetrics();
+      d.getMetrics(displayMetrics);
+
+      int displayHeight = displayMetrics.heightPixels;
+      int displayWidth = displayMetrics.widthPixels;
+
+      hasSoftwareKeys =  (realWidth - displayWidth) > 0 ||
+              (realHeight - displayHeight) > 0;
+    } else {
+      boolean hasMenuKey = ViewConfiguration.get(reactContext).hasPermanentMenuKey();
+      boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+      hasSoftwareKeys = !hasMenuKey && !hasBackKey;
+    }
+    return hasSoftwareKeys;
   }
 }

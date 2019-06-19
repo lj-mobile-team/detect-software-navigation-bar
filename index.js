@@ -2,8 +2,8 @@ import { NativeModules } from 'react-native';
 
 const { RNDetectSoftwareNavigationBar } = NativeModules;
 
-const isSoftWare = async () => {
+const isSoftware = async () => {
   return await RNDetectSoftwareNavigationBar.isSoftware();
 }
 
-export default isSoftWare().then(isEnabled => isEnabled).catch(() => false);
+export default isSoftware().then(isEnabled => isEnabled).catch(() => false);

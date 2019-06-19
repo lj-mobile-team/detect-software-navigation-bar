@@ -51,6 +51,7 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
     int displayHeight = displayMetrics.heightPixels;
     int displayWidth = displayMetrics.widthPixels;
 
-    return (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0;
+//    return (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0;
+    return true;
   }
 }

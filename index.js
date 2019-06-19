@@ -6,7 +6,10 @@ let isSoftware = false;
 
 console.log('before', isSoftware);
 
-RNDetectSoftwareNavigationBar.isSoftware(bool => isSoftware = bool);
+RNDetectSoftwareNavigationBar.isSoftware((bool) => {
+  console.log('inner', bool);
+  isSoftware = bool;
+});
 
 console.log('after', isSoftware);
 

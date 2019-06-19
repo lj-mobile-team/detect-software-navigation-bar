@@ -8,6 +8,7 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
 
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -30,8 +31,8 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
   }
 
   @ReactMethod
-  public void isSoftware(Callback callback) {
-    callback.invoke(getIsSoftwareMode());
+  public void isSoftware(final Promise promise) {
+    promise.resolve(getIsSoftwareMode());
   }
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -51,7 +52,7 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
     int displayHeight = displayMetrics.heightPixels;
     int displayWidth = displayMetrics.widthPixels;
 
-//    return (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0;
-    return true;
+    return (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0;
+//    return true;
   }
 }

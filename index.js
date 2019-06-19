@@ -7,4 +7,12 @@ const isSoftware = async () => {
   console.log('temp', temp);
 }
 
-export default isSoftware;
+const getHeight = async () => {
+  const height = await RNDetectSoftwareNavigationBar.getHeight();
+  console.log('height', height);
+}
+
+export {
+  isSoftware,
+  getHeight,
+};

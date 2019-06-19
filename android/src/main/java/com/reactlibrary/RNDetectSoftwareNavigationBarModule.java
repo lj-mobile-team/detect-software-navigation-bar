@@ -3,6 +3,7 @@ package com.reactlibrary;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -33,6 +34,20 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
   @ReactMethod
   public void isSoftware(final Promise promise) {
     promise.resolve(getIsSoftwareMode());
+  }
+
+  @ReactMethod
+  public void getHeight(final Promise promise) {
+    promise.resolve(getSystemHeight());
+  }
+
+  public int getSystemHeight() {
+    Resources resources = reactContext.getResources();
+    int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+    if (resourceId > 0) {
+      return resources.getDimensionPixelSize(resourceId);
+    }
+    return 0;
   }
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)

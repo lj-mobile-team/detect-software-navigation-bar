@@ -5,9 +5,11 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -28,9 +30,12 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
     return "RNDetectSoftwareNavigationBar";
   }
 
-  @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   @ReactMethod
-  public boolean getIsSoftwareMode() {
+  public void isSoftware(final Promise promise) {
+    promise.resolve(getIsSoftware());
+  }
+
+  public boolean getIsSoftware() {
     if (!cached) {
       if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
         hasImmersive = false;
@@ -55,6 +60,6 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
       cached = true;
     }
 
-    return false;
+    return hasImmersive;
   }
 }

@@ -3,7 +3,9 @@ import { NativeModules } from 'react-native';
 const { RNDetectSoftwareNavigationBar } = NativeModules;
 
 const isSoftware = async () => { 
-  return await RNDetectSoftwareNavigationBar.isSoftware(); 
+  const temp = await RNDetectSoftwareNavigationBar.isSoftware();
+  console.log('temp', temp);
+  return temp;
 }
 
 console.log('after', isSoftware());

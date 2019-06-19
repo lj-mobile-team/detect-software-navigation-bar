@@ -6,4 +6,4 @@ const isSoftWare = async () => {
   return await RNDetectSoftwareNavigationBar.isSoftware();
 }
 
-export default isSoftWare;
+export default isSoftWare().then(isEnabled => isEnabled).catch(() => false);

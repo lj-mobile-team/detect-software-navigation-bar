@@ -1,0 +1,1 @@
+# detect-software-navigation-bar

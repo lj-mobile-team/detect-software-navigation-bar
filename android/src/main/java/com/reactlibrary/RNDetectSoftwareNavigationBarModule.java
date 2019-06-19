@@ -29,7 +29,7 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
     return "RNDetectSoftwareNavigationBar";
   }
 
-  @ReactMethod
+  @ReactMethod(isBlockingSynchronousMethod = true)
   public void isSoftware(Callback callback) {
     callback.invoke(getIsSoftwareMode());
   }

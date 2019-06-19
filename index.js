@@ -4,12 +4,10 @@ const { RNDetectSoftwareNavigationBar } = NativeModules;
 
 let isSoftware = false;
 
-const callbac = bool => {
-  console.log(bool);
-  isSoftware = bool;
-};
-RNDetectSoftwareNavigationBar.isSoftware(callbac);
+console.log('before', isSoftware);
 
-console.log(isSoftware);
+RNDetectSoftwareNavigationBar.isSoftware(bool => isSoftware = bool);
+
+console.log('after', isSoftware);
 
 export default isSoftware;

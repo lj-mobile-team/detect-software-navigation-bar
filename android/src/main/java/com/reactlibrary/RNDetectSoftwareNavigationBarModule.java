@@ -55,6 +55,6 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
       cached = true;
     }
 
-    return hasImmersive;
+    return false;
   }
 }

@@ -2,9 +2,12 @@ import { NativeModules } from 'react-native';
 
 const { RNDetectSoftwareNavigationBar } = NativeModules;
 
-const callbac = bool => bool;
+let isSoftware = false;
 
-const isSoftware = RNDetectSoftwareNavigationBar.isSoftware(callbac);
+const callbac = bool => {
+  isSoftware = bool;
+};
+RNDetectSoftwareNavigationBar.isSoftware(callbac);
 
 console.log(isSoftware);
 

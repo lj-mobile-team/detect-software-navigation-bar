@@ -39,7 +39,7 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
   public boolean getIsSoftwareMode() {
     WindowManager windowManager = (WindowManager)reactContext.getSystemService(Context.WINDOW_SERVICE);
 
-    boolean hasSoftwareKeys = true;
+    boolean hasSoftwareKeys = false;
 
     if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN_MR1){
       Display d = windowManager.getDefaultDisplay();

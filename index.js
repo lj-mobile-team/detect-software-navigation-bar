@@ -5,7 +5,6 @@ const { RNDetectSoftwareNavigationBar } = NativeModules;
 const isSoftware = async () => { 
   const temp = await RNDetectSoftwareNavigationBar.isSoftware();
   console.log('temp', temp);
-  return temp.resolve();
 }
 
 export default isSoftware;

@@ -29,12 +29,12 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
     return "RNDetectSoftwareNavigationBar";
   }
 
+  @ReactMethod
   public void isSoftware(Callback callback) {
     callback.invoke(getIsSoftwareMode());
   }
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-  @ReactMethod
   public boolean getIsSoftwareMode() {
     WindowManager windowManager = (WindowManager)reactContext.getSystemService(Context.WINDOW_SERVICE);
     Display d = windowManager.getDefaultDisplay();

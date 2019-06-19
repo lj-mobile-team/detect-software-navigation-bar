@@ -2,12 +2,14 @@ import { NativeModules } from 'react-native';
 
 const { RNDetectSoftwareNavigationBar } = NativeModules;
 
-const isSoftware = async () => { 
-  const temp = await RNDetectSoftwareNavigationBar.isSoftware();
-  console.log('temp', temp);
-  return temp;
-}
+const temp = await RNDetectSoftwareNavigationBar.isSoftware();
 
-console.log('after', isSoftware());
+// const isSoftware = async () => { 
+  
+//   console.log('temp', temp);
+//   return temp;
+// }
+
+console.log('after', temp);
 
 export default isSoftware;

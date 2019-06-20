@@ -7,6 +7,7 @@ import android.os.Build;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.ViewConfiguration;
 import android.view.WindowManager;
 
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -80,13 +81,15 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
 
   private boolean hasPermanentMenuKey() {
     final Context ctx = getReactApplicationContext();
-    int id = 0;
+
     if(isEmulator()) {
-      id = ctx.getResources().getIdentifier("qemu.hw.mainkeys", "bool", "android");
+      boolean hasPermanentMenuKey = ViewConfiguration.get(ctx).hasPermanentMenuKey();
+      return hasPermanentMenuKey;
     } else {
-      id = ctx.getResources().getIdentifier("config_showNavigationBar", "bool", "android");
+      int id = ctx.getResources().getIdentifier("config_showNavigationBar", "bool", "android");
+
+      return !(id > 0 && ctx.getResources().getBoolean(id));
     }
-    return !(id > 0 && ctx.getResources().getBoolean(id));
   }
 
   private float getStatusBarHeight(DisplayMetrics metrics) {

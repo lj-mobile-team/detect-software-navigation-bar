@@ -17,8 +17,10 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaModule {
 
@@ -41,9 +43,11 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
 
   @ReactMethod
   public void getHeight(final Promise promise) {
-    Point res = getNavigationBarSize(this.reactContext);
-    float[] array = new float[]{res.x, res.y};
-    promise.resolve(array);
+    Point point = getNavigationBarSize(this.reactContext);
+    Map res = null;
+    res.put("width", point.x);
+    res.put("height", point.y);
+    promise.resolve(res);
   }
 
 //  public int getSystemHeight() {

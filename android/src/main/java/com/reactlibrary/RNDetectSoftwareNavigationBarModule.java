@@ -4,6 +4,7 @@ package com.reactlibrary;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Point;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -16,6 +17,8 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaModule {
 
@@ -31,53 +34,62 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
     return "RNDetectSoftwareNavigationBar";
   }
 
-  @ReactMethod
-  public void isSoftware(final Promise promise) {
-    promise.resolve(getIsSoftwareMode());
-  }
+//  @ReactMethod
+//  public void isSoftware(final Promise promise) {
+//    promise.resolve(getIsSoftwareMode());
+//  }
 
   @ReactMethod
   public void getHeight(final Promise promise) {
-    promise.resolve(getSystemHeight());
+    promise.resolve(getNavigationBarSize(this.reactContext));
   }
 
-  public int getSystemHeight() {
-    Resources resources = reactContext.getResources();
-    int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
-    if (resourceId > 0) {
-      return resources.getDimensionPixelSize(resourceId);
+//  public int getSystemHeight() {
+//    Resources resources = reactContext.getResources();
+//    int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+//    if (resourceId > 0) {
+//      return resources.getDimensionPixelSize(resourceId);
+//    }
+//    return 0;
+//  }
+
+  public static Point getNavigationBarSize(Context context) {
+    Point appUsableSize = getAppUsableScreenSize(context);
+    Point realScreenSize = getRealScreenSize(context);
+
+    if (appUsableSize.x < realScreenSize.x) {
+      return new Point(realScreenSize.x - appUsableSize.x, appUsableSize.y);
     }
-    return 0;
+
+    if (appUsableSize.y < realScreenSize.y) {
+      return new Point(appUsableSize.x, realScreenSize.y - appUsableSize.y);
+    }
+
+    return new Point();
   }
 
-  @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-  public boolean getIsSoftwareMode() {
-    WindowManager windowManager = (WindowManager)reactContext.getSystemService(Context.WINDOW_SERVICE);
+  public static Point getAppUsableScreenSize(Context context) {
+    WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+    Display display = windowManager.getDefaultDisplay();
+    Point size = new Point();
+    display.getSize(size);
+    return size;
+  }
 
-    boolean hasSoftwareKeys = false;
+  public static Point getRealScreenSize(Context context) {
+    WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+    Display display = windowManager.getDefaultDisplay();
+    Point size = new Point();
 
-    if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN_MR1){
-      Display d = windowManager.getDefaultDisplay();
-
-      DisplayMetrics realDisplayMetrics = new DisplayMetrics();
-      d.getRealMetrics(realDisplayMetrics);
-
-      int realHeight = realDisplayMetrics.heightPixels;
-      int realWidth = realDisplayMetrics.widthPixels;
-
-      DisplayMetrics displayMetrics = new DisplayMetrics();
-      d.getMetrics(displayMetrics);
-
-      int displayHeight = displayMetrics.heightPixels;
-      int displayWidth = displayMetrics.widthPixels;
-
-      hasSoftwareKeys =  (realWidth - displayWidth) > 0 ||
-              (realHeight - displayHeight) > 0;
-    } else {
-      boolean hasMenuKey = ViewConfiguration.get(reactContext).hasPermanentMenuKey();
-      boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
-      hasSoftwareKeys = !hasMenuKey && !hasBackKey;
+    if (Build.VERSION.SDK_INT >= 17) {
+      display.getRealSize(size);
+    } else if (Build.VERSION.SDK_INT >= 14) {
+      try {
+        size.x = (Integer) Display.class.getMethod("getRawWidth").invoke(display);
+        size.y = (Integer) Display.class.getMethod("getRawHeight").invoke(display);
+      } catch (IllegalAccessException e) {} catch (InvocationTargetException e) {} catch (NoSuchMethodException e) {}
     }
-    return hasSoftwareKeys;
+
+    return size;
   }
 }

@@ -20,6 +20,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaModule {
@@ -44,7 +45,7 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
   @ReactMethod
   public void getHeight(final Promise promise) {
     Point point = getNavigationBarSize(this.reactContext);
-    Map res = null;
+    HashMap res = new HashMap();
     res.put("width", point.x);
     res.put("height", point.y);
     promise.resolve(res);

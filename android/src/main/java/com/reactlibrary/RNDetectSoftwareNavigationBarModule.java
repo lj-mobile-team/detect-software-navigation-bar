@@ -79,7 +79,12 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
 
   private boolean hasPermanentMenuKey() {
     final Context ctx = getReactApplicationContext();
-    int id = ctx.getResources().getIdentifier("config_showNavigationBar", "bool", "android");
+    int id = 0;
+    if(isEmulator()) {
+      id = ctx.getResources().getIdentifier("qemu.hw.mainkeys", "bool", "android");
+    } else {
+      id = ctx.getResources().getIdentifier("config_showNavigationBar", "bool", "android");
+    }
     return !(id > 0 && ctx.getResources().getBoolean(id));
   }
 
@@ -150,5 +155,16 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
       return 0;
     }
     return 0;
+  }
+
+  public static boolean isEmulator() {
+    return Build.FINGERPRINT.startsWith("generic")
+            || Build.FINGERPRINT.startsWith("unknown")
+            || Build.MODEL.contains("google_sdk")
+            || Build.MODEL.contains("Emulator")
+            || Build.MODEL.contains("Android SDK built for x86")
+            || Build.MANUFACTURER.contains("Genymotion")
+            || (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
+            || "google_sdk".equals(Build.PRODUCT);
   }
 }

@@ -1,37 +1,31 @@
 
 package com.reactlibrary;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Point;
 import android.os.Build;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Display;
-import android.view.KeyCharacterMap;
-import android.view.KeyEvent;
-import android.view.ViewConfiguration;
 import android.view.WindowManager;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableArray;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaModule {
+public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
-  private final ReactApplicationContext reactContext;
+  private ReactApplicationContext mReactContext;
 
   public RNDetectSoftwareNavigationBarModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    this.reactContext = reactContext;
+    mReactContext = reactContext;
+    mReactContext.addLifecycleEventListener(this);
   }
 
   @Override
@@ -39,67 +33,122 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
     return "RNDetectSoftwareNavigationBar";
   }
 
-//  @ReactMethod
-//  public void isSoftware(final Promise promise) {
-//    promise.resolve(getIsSoftwareMode());
-//  }
+  @Override
+  public void onHostDestroy() {
 
-  @ReactMethod
-  public void getHeight(final Promise promise) {
-    Point point = getNavigationBarSize(this.reactContext);
-    WritableArray res = Arguments.createArray();
-    res.pushInt(point.x);
-    res.pushInt(point.y);
-
-    promise.resolve(res);
   }
 
-//  public int getSystemHeight() {
-//    Resources resources = reactContext.getResources();
-//    int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
-//    if (resourceId > 0) {
-//      return resources.getDimensionPixelSize(resourceId);
-//    }
-//    return 0;
-//  }
+  @Override
+  public void onHostPause() {
 
-  public static Point getNavigationBarSize(Context context) {
-    Point appUsableSize = getAppUsableScreenSize(context);
-    Point realScreenSize = getRealScreenSize(context);
-
-    if (appUsableSize.x < realScreenSize.x) {
-      return new Point(realScreenSize.x - appUsableSize.x, appUsableSize.y);
-    }
-
-    if (appUsableSize.y < realScreenSize.y) {
-      return new Point(appUsableSize.x, realScreenSize.y - appUsableSize.y);
-    }
-
-    return new Point();
   }
 
-  public static Point getAppUsableScreenSize(Context context) {
-    WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-    Display display = windowManager.getDefaultDisplay();
-    Point size = new Point();
-    display.getSize(size);
-    return size;
+  @Override
+  public void onHostResume() {
+
   }
 
-  public static Point getRealScreenSize(Context context) {
-    WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-    Display display = windowManager.getDefaultDisplay();
-    Point size = new Point();
+  @Override
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants =  new HashMap<>();
+
+    final Context ctx = getReactApplicationContext();
+    final DisplayMetrics metrics = ctx.getResources().getDisplayMetrics();
+
 
     if (Build.VERSION.SDK_INT >= 17) {
-      display.getRealSize(size);
-    } else if (Build.VERSION.SDK_INT >= 14) {
+      Display display = ((WindowManager) mReactContext.getSystemService(Context.WINDOW_SERVICE))
+              .getDefaultDisplay();
       try {
-        size.x = (Integer) Display.class.getMethod("getRawWidth").invoke(display);
-        size.y = (Integer) Display.class.getMethod("getRawHeight").invoke(display);
-      } catch (IllegalAccessException e) {} catch (InvocationTargetException e) {} catch (NoSuchMethodException e) {}
+        Display.class.getMethod("getRealMetrics", DisplayMetrics.class).invoke(display, metrics);
+      } catch (InvocationTargetException e) {
+      } catch (IllegalAccessException e) {
+      } catch (NoSuchMethodException e) {
+      }
     }
 
-    return size;
+    constants.put("REAL_WINDOW_HEIGHT", getRealHeight(metrics));
+    constants.put("REAL_WINDOW_WIDTH", getRealWidth(metrics));
+    constants.put("STATUS_BAR_HEIGHT", getStatusBarHeight(metrics));
+    constants.put("SOFT_MENU_BAR_HEIGHT", getSoftMenuBarHeight(metrics));
+    constants.put("SMART_BAR_HEIGHT", getSmartBarHeight(metrics));
+    constants.put("SOFT_MENU_BAR_ENABLED", hasPermanentMenuKey());
+
+    return constants;
+  }
+
+  private boolean hasPermanentMenuKey() {
+    final Context ctx = getReactApplicationContext();
+    int id = ctx.getResources().getIdentifier("config_showNavigationBar", "bool", "android");
+    return !(id > 0 && ctx.getResources().getBoolean(id));
+  }
+
+  private float getStatusBarHeight(DisplayMetrics metrics) {
+    final Context ctx = getReactApplicationContext();
+    final int heightResId = ctx.getResources().getIdentifier("status_bar_height", "dimen", "android");
+    return
+            heightResId > 0
+                    ? ctx.getResources().getDimensionPixelSize(heightResId) / metrics.density
+                    : 0;
+  }
+
+  private float getSoftMenuBarHeight(DisplayMetrics metrics) {
+    if(hasPermanentMenuKey()) {
+      return 0;
+    }
+    final Context ctx = getReactApplicationContext();
+    final int heightResId = ctx.getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+    return
+            heightResId > 0
+                    ? ctx.getResources().getDimensionPixelSize(heightResId) / metrics.density
+                    : 0;
+  }
+
+  private float getRealHeight(DisplayMetrics metrics) {
+    return metrics.heightPixels / metrics.density;
+  }
+
+  private float getRealWidth(DisplayMetrics metrics) {
+    return metrics.widthPixels / metrics.density;
+  }
+
+  private float getSmartBarHeight(DisplayMetrics metrics) {
+    final Context context = getReactApplicationContext();
+    final boolean isMeiZu = Build.MANUFACTURER.equals("Meizu");
+
+    final boolean autoHideSmartBar = Settings.System.getInt(context.getContentResolver(),
+            "mz_smartbar_auto_hide", 0) == 1;
+
+    if (!isMeiZu || autoHideSmartBar) {
+      return 0;
+    }
+    try {
+      Class c = Class.forName("com.android.internal.R$dimen");
+      Object obj = c.newInstance();
+      Field field = c.getField("mz_action_button_min_height");
+      int height = Integer.parseInt(field.get(obj).toString());
+      return context.getResources().getDimensionPixelSize(height) / metrics.density;
+    } catch (Throwable e) {
+      return getNormalNavigationBarHeight(context) / metrics.density;
+    }
+  }
+
+  protected static float getNormalNavigationBarHeight(final Context ctx) {
+    try {
+      final Resources res = ctx.getResources();
+      int rid = res.getIdentifier("config_showNavigationBar", "bool", "android");
+      if (rid > 0) {
+        boolean flag = res.getBoolean(rid);
+        if (flag) {
+          int resourceId = res.getIdentifier("navigation_bar_height", "dimen", "android");
+          if (resourceId > 0) {
+            return res.getDimensionPixelSize(resourceId);
+          }
+        }
+      }
+    } catch (Throwable e) {
+      return 0;
+    }
+    return 0;
   }
 }

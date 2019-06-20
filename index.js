@@ -13,6 +13,6 @@ const getHeight = async () => {
 }
 
 export {
-  isSoftware,
+  // isSoftware,
   getHeight,
 };

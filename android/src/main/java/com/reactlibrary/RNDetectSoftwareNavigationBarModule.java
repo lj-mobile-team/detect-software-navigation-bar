@@ -73,6 +73,7 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
     constants.put("SOFT_MENU_BAR_HEIGHT", getSoftMenuBarHeight(metrics));
     constants.put("SMART_BAR_HEIGHT", getSmartBarHeight(metrics));
     constants.put("SOFT_MENU_BAR_ENABLED", hasPermanentMenuKey());
+    constants.put("IS_EMULATOR", isEmulator());
 
     return constants;
   }

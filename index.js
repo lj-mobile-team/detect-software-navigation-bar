@@ -44,6 +44,10 @@ export function isSoftMenuBarEnabled() {
   return get('SOFT_MENU_BAR_ENABLED');
 }
 
+export function isEmulator() {
+  return get('IS_EMULATOR');
+}
+
 // stay compatible with pre-es6 exports
 export default {
   get,
@@ -52,5 +56,6 @@ export default {
   getStatusBarHeight,
   getSoftMenuBarHeight,
   getSmartBarHeight,
-  isSoftMenuBarEnabled
+  isSoftMenuBarEnabled,
+  isEmulator,
 }

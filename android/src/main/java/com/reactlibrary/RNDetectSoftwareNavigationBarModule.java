@@ -13,11 +13,13 @@ import android.view.KeyEvent;
 import android.view.ViewConfiguration;
 import android.view.WindowManager;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -45,9 +47,10 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
   @ReactMethod
   public void getHeight(final Promise promise) {
     Point point = getNavigationBarSize(this.reactContext);
-    HashMap res = new HashMap();
-    res.put("width", point.x);
-    res.put("height", point.y);
+    WritableArray res = Arguments.createArray();
+    res.pushInt(point.x);
+    res.pushInt(point.y);
+
     promise.resolve(res);
   }
 

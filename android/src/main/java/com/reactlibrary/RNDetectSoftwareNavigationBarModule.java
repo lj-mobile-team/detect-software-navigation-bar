@@ -41,7 +41,9 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
 
   @ReactMethod
   public void getHeight(final Promise promise) {
-    promise.resolve(getNavigationBarSize(this.reactContext));
+    Point res = getNavigationBarSize(this.reactContext);
+    float[] array = new float[]{res.x, res.y};
+    promise.resolve(array);
   }
 
 //  public int getSystemHeight() {

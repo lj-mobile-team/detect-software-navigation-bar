@@ -102,9 +102,6 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
   }
 
   private float getSoftMenuBarHeight(DisplayMetrics metrics) {
-    if(hasPermanentMenuKey()) {
-      return 0;
-    }
     final Context ctx = getReactApplicationContext();
     final int heightResId = ctx.getResources().getIdentifier("navigation_bar_height", "dimen", "android");
     return

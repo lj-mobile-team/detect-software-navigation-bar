@@ -88,7 +88,7 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
     } else {
       int id = ctx.getResources().getIdentifier("config_showNavigationBar", "bool", "android");
 
-      return !(id > 0 && ctx.getResources().getBoolean(id));
+      return (id > 0 && ctx.getResources().getBoolean(id));
     }
   }
 

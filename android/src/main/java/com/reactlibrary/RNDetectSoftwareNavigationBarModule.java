@@ -86,9 +86,22 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
       boolean hasPermanentMenuKey = ViewConfiguration.get(ctx).hasPermanentMenuKey();
       return hasPermanentMenuKey;
     } else {
-      int id = ctx.getResources().getIdentifier("config_showNavigationBar", "bool", "android");
+      WindowManager windowManager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
+      Display d = windowManager.getDefaultDisplay();
 
-      return (id > 0 && ctx.getResources().getBoolean(id));
+      DisplayMetrics realDisplayMetrics = new DisplayMetrics();
+      d.getRealMetrics(realDisplayMetrics);
+
+      int realHeight = realDisplayMetrics.heightPixels;
+      int realWidth = realDisplayMetrics.widthPixels;
+
+      DisplayMetrics displayMetrics = new DisplayMetrics();
+      d.getMetrics(displayMetrics);
+
+      int displayHeight = displayMetrics.heightPixels;
+      int displayWidth = displayMetrics.widthPixels;
+
+      return (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0;
     }
   }
 

@@ -1,14 +1,16 @@
 import { NativeModules, Platform } from 'react-native';
 
+const DectectModule = NativeModules.RNDetectSoftwareNavigationBar;
+
 export function get(dim) {
   if (Platform.OS !== 'android') {
     return 0;
   } else {
     try {
-      if (!NativeModules.RNDetectSoftwareNavigationBar) {
+      if (!DectectModule) {
         throw "RNDetectSoftwareNavigationBar not defined. Try rebuilding your project. e.g. react-native run-android";
       }
-      const result = NativeModules.RNDetectSoftwareNavigationBar[dim];
+      const result = DectectModule[dim];
 
       if (typeof result !== 'number') {
         return result;
@@ -46,6 +48,14 @@ export function isSoftMenuBarEnabled() {
 
 export function isEmulator() {
   return get('IS_EMULATOR');
+}
+
+export function setNavBackgroundColor(color = '#ffffff') {
+  if (!DectectModule) {
+    throw "RNDetectSoftwareNavigationBar not defined. Try rebuilding your project. e.g. react-native run-android";
+  }
+
+  DectectModule.setNavBackgroundColor(color);
 }
 
 // stay compatible with pre-es6 exports

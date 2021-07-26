@@ -1,8 +1,10 @@
 
 package com.reactlibrary;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
@@ -10,9 +12,12 @@ import android.view.Display;
 import android.view.ViewConfiguration;
 import android.view.WindowManager;
 
+import androidx.annotation.RequiresApi;
+
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -49,6 +54,7 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
 
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
   @Override
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants =  new HashMap<>();
@@ -79,6 +85,16 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
     return constants;
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+  @ReactMethod
+  public void setNavBackgroundColor(String color) {
+    if (color != null) {
+      int newColor = Color.parseColor(color);
+      ((Activity) mReactContext.getApplicationContext()).getWindow().setNavigationBarColor(newColor);
+    }
+  }
+
+  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
   private boolean hasPermanentMenuKey() {
     final Context ctx = getReactApplicationContext();
 

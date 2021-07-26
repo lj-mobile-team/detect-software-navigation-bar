@@ -68,4 +68,5 @@ export default {
   getSmartBarHeight,
   isSoftMenuBarEnabled,
   isEmulator,
+  setNavBackgroundColor,
 }

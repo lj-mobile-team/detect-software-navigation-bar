@@ -24,6 +24,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
+
 public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
   private ReactApplicationContext mReactContext;
@@ -87,11 +89,16 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
 
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
   @ReactMethod
-  public void setNavBackgroundColor(String color) {
-    if (color != null) {
-      int newColor = Color.parseColor(color);
-      ((Activity) mReactContext.getApplicationContext()).getWindow().setNavigationBarColor(newColor);
-    }
+  public void setNavBackgroundColor(final String color) {
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        if (color != null) {
+          int newColor = Color.parseColor(color);
+          getCurrentActivity().getWindow().setNavigationBarColor(newColor);
+        }
+      }
+    });
   }
 
   @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)

@@ -2,50 +2,51 @@ import { NativeModules, Platform } from 'react-native';
 
 const DetectModule = NativeModules.RNDetectSoftwareNavigationBar;
 
-function checkForDetectModule() {
+function isModuleAvailable() {
+  if (Platform.OS !== 'android') return false;
+
   if (!DetectModule) {
     throw "RNDetectSoftwareNavigationBar not defined. Try rebuilding your project. e.g. react-native run-android";
+  }
+
+  return true;
+}
+
+function withModule(callback) {
+  try {
+    if (!isModuleAvailable() || typeof callback !== 'function') {
+      return 0;
+    } else {
+      return callback();
+    }
+  } catch (e) {
+    console.error(e);
+    return 0;
   }
 }
 
 export function get(dim) {
-  if (Platform.OS !== 'android') {
-    return 0;
-  } else {
-    try {
-      checkForDetectModule();
-      const result = DetectModule[dim];
-      
-      return result;
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  return withModule(() => DetectModule[dim]);
 }
 
 export function getRealWindowHeight() {
-  checkForDetectModule();
-  return DetectModule.getRealHeight();
+  return withModule(() => DetectModule.getRealHeight());
 }
 
 export function getRealWindowWidth() {
-  checkForDetectModule();
-  return DetectModule.getRealWidth();
+  return withModule(() => DetectModule.getRealWidth());
 }
 
 export function getStatusBarHeight() {
-  checkForDetectModule();
-  return DetectModule.getStatusBarHeight();
+  return withModule(() => DetectModule.getStatusBarHeight());
 }
 
 export function getSoftMenuBarHeight() {
-  checkForDetectModule();
-  return DetectModule.getSoftMenuBarHeight();
+  return withModule(() => DetectModule.getSoftMenuBarHeight());
 }
 
 export function getSmartBarHeight() {
-  checkForDetectModule();
-  return DetectModule.getSmartBarHeight();
+  return withModule(() => DetectModule.getSmartBarHeight());
 }
 
 export function isSoftMenuBarEnabled() {
@@ -57,8 +58,7 @@ export function isEmulator() {
 }
 
 export function setNavBackgroundColor(color = '#ffffff') {
-  checkForDetectModule();
-  DetectModule.setNavBackgroundColor(color);
+  return withModule(() => DetectModule.setNavBackgroundColor(color));
 }
 
 // stay compatible with pre-es6 exports

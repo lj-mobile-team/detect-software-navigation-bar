@@ -76,11 +76,11 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
       }
     }
 
-    constants.put("REAL_WINDOW_HEIGHT", getRealHeight(metrics));
-    constants.put("REAL_WINDOW_WIDTH", getRealWidth(metrics));
-    constants.put("STATUS_BAR_HEIGHT", getStatusBarHeight(metrics));
-    constants.put("SOFT_MENU_BAR_HEIGHT", getSoftMenuBarHeight(metrics));
-    constants.put("SMART_BAR_HEIGHT", getSmartBarHeight(metrics));
+    constants.put("REAL_WINDOW_HEIGHT", getRealHeight());
+    constants.put("REAL_WINDOW_WIDTH", getRealWidth());
+    constants.put("STATUS_BAR_HEIGHT", getStatusBarHeight());
+    constants.put("SOFT_MENU_BAR_HEIGHT", getSoftMenuBarHeight());
+    constants.put("SMART_BAR_HEIGHT", getSmartBarHeight());
     constants.put("SOFT_MENU_BAR_ENABLED", hasPermanentMenuKey());
     constants.put("IS_EMULATOR", isEmulator());
 
@@ -128,8 +128,10 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
     }
   }
 
-  private float getStatusBarHeight(DisplayMetrics metrics) {
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public float getStatusBarHeight() {
     final Context ctx = getReactApplicationContext();
+    final DisplayMetrics metrics = ctx.getResources().getDisplayMetrics();
     final int heightResId = ctx.getResources().getIdentifier("status_bar_height", "dimen", "android");
     return
             heightResId > 0
@@ -137,8 +139,10 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
                     : 0;
   }
 
-  private float getSoftMenuBarHeight(DisplayMetrics metrics) {
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public float getSoftMenuBarHeight() {
     final Context ctx = getReactApplicationContext();
+    final DisplayMetrics metrics = ctx.getResources().getDisplayMetrics();
     final int heightResId = ctx.getResources().getIdentifier("navigation_bar_height", "dimen", "android");
     return
             heightResId > 0
@@ -146,16 +150,26 @@ public class RNDetectSoftwareNavigationBarModule extends ReactContextBaseJavaMod
                     : 0;
   }
 
-  private float getRealHeight(DisplayMetrics metrics) {
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public float getRealHeight() {
+    final Context ctx = getReactApplicationContext();
+    final DisplayMetrics metrics = ctx.getResources().getDisplayMetrics();
+
     return metrics.heightPixels / metrics.density;
   }
 
-  private float getRealWidth(DisplayMetrics metrics) {
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public float getRealWidth() {
+    final Context ctx = getReactApplicationContext();
+    final DisplayMetrics metrics = ctx.getResources().getDisplayMetrics();
+
     return metrics.widthPixels / metrics.density;
   }
 
-  private float getSmartBarHeight(DisplayMetrics metrics) {
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public float getSmartBarHeight() {
     final Context context = getReactApplicationContext();
+    final DisplayMetrics metrics = context.getResources().getDisplayMetrics();
     final boolean isMeiZu = Build.MANUFACTURER.equals("Meizu");
 
     final boolean autoHideSmartBar = Settings.System.getInt(context.getContentResolver(),

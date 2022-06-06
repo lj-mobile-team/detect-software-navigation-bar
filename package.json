@@ -1,7 +1,6 @@
-
 {
   "name": "react-native-detect-software-navigation-bar",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,8 +12,7 @@
   "author": "",
   "license": "",
   "peerDependencies": {
-    "react-native": "^0.41.2",
-    "react-native-windows": "0.41.0-rc.1"
-
+    "react-native": "0.64.2",
+    "react-native-windows": "0.64.20"
   }
 }
